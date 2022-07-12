@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lestrrat-go/jwx/jwa"
-	ginjwt "github.com/sina-am/gin-jwt/gin-jwt"
+	ginjwt "github.com/sina-am/gin-jwt"
 )
 
 type User struct {
@@ -20,8 +20,8 @@ type UserAuth struct {
 }
 
 var UserStorage = []User{
-	{ID: "12", Username: "sina", Password: "sina.a.m"},
-	{ID: "14", Username: "ali", Password: "password"},
+	{ID: "1", Username: "admin", Password: "admin"},
+	{ID: "2", Username: "test", Password: "test"},
 }
 
 func GetUserById(userID string) (User, error) {
@@ -59,11 +59,10 @@ func main() {
 		Authorizator: func(data interface{}) (interface{}, error) {
 			return GetUserById(data.(string))
 		},
-		SecretKey:     []byte("sinaaarabi"),
-		Algorithm:     jwa.HS512,
-		IdentityKey:   "user",
-		TokenLookup:   ginjwt.TokenLookup{From: ginjwt.Header, Name: "Authorization"},
-		TokenHeadName: "Bearer",
+		SecretKey:   []byte("randomkey"),
+		Algorithm:   jwa.HS512,
+		IdentityKey: "user",
+		TokenLookup: ginjwt.TokenLookup{From: ginjwt.Cookie, Name: "jwt"},
 	}
 
 	r := gin.Default()

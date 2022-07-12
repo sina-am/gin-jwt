@@ -11,7 +11,6 @@ type fetchType int
 
 const (
 	Header fetchType = iota
-	Url
 	Cookie
 )
 
@@ -29,18 +28,33 @@ func (ja *JwtAuthentication) newToken(value interface{}) jwt.Token {
 
 func (ja *JwtAuthentication) getToken(c *gin.Context) (jwt.Token, error) {
 	switch ja.TokenLookup.From {
+	case Cookie:
+		return ja.fromCookie(c)
 	default:
-		return jwt.ParseRequest(
-			c.Request,
-			jwt.WithHeaderKey(ja.TokenLookup.Name),
-			jwt.WithVerify(ja.Algorithm, ja.SecretKey),
-		)
+		return ja.fromHeader(c)
 	}
 }
 
 func (ja *JwtAuthentication) setToken(c *gin.Context, jsonToken []byte) {
 	switch ja.TokenLookup.From {
+	case Cookie:
+		c.SetCookie(ja.TokenLookup.Name, string(jsonToken), 0, "", "", false, false)
 	default:
 		c.Header(ja.TokenLookup.Name, ja.TokenHeadName+" "+string(jsonToken))
 	}
+}
+
+func (ja *JwtAuthentication) fromHeader(c *gin.Context) (jwt.Token, error) {
+	return jwt.ParseRequest(
+		c.Request,
+		jwt.WithHeaderKey(ja.TokenLookup.Name),
+		jwt.WithVerify(ja.Algorithm, ja.SecretKey),
+	)
+}
+func (ja *JwtAuthentication) fromCookie(c *gin.Context) (jwt.Token, error) {
+	token, err := c.Cookie(ja.TokenLookup.Name)
+	if err != nil {
+		return nil, err
+	}
+	return jwt.ParseString(token, jwt.WithVerify(ja.Algorithm, ja.SecretKey))
 }

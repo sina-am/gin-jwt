@@ -13,7 +13,7 @@ func (ja *JwtAuthentication) AuthenticationMiddleware() gin.HandlerFunc {
 
 		token, err := ja.getToken(c)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Message": "Invalid header"})
+			return
 		}
 		if tokenValue, ok := token.Get(ja.IdentityKey); ok {
 			user, err := ja.Authorizator(tokenValue)
