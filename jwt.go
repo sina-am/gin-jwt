@@ -1,9 +1,15 @@
 package ginjwt
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwt"
+)
+
+var (
+	ErrorUnauthorized = fmt.Errorf("login required")
 )
 
 type JwtAuthentication struct {

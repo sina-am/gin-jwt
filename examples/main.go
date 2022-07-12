@@ -69,7 +69,7 @@ func main() {
 	r.Use(authMiddleware.AuthenticationMiddleware())
 	r.POST("/login/", authMiddleware.LoginHandler)
 
-	authorized := r.Group("/user", authMiddleware.LoginRequiredMiddleware(gin.H{"Message": "Permission denied"}))
+	authorized := r.Group("/user", authMiddleware.LoginRequiredMiddleware())
 	authorized.GET("/profile/", Profile)
 	r.Run()
 }

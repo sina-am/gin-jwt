@@ -10,11 +10,11 @@ import (
 func (ja *JwtAuthentication) LoginHandler(c *gin.Context) {
 	data, err := ja.Authenticator(c)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"Error": "Login error"})
+		c.AbortWithError(http.StatusForbidden, err)
 	}
 	token, err := jwt.Sign(ja.newToken(data), ja.Algorithm, ja.SecretKey)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"Error": "Login error"})
+		c.AbortWithError(http.StatusUnauthorized, err)
 	}
 	ja.setToken(c, token)
 }

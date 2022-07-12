@@ -25,10 +25,10 @@ func (ja *JwtAuthentication) AuthenticationMiddleware() gin.HandlerFunc {
 	}
 }
 
-func (ja *JwtAuthentication) LoginRequiredMiddleware(errorMessage gin.H) gin.HandlerFunc {
+func (ja *JwtAuthentication) LoginRequiredMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !c.GetBool("IsAuthenticated") {
-			c.AbortWithStatusJSON(http.StatusForbidden, errorMessage)
+			c.AbortWithError(http.StatusUnauthorized, ErrorUnauthorized)
 		}
 	}
 }
